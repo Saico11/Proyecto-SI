@@ -164,3 +164,131 @@ preguntar_diseno_detalle :-
     write('¿Prefieres macOS? (s/n): '),
     leer_si_no(R),
     recomendar_diseno(R).
+% =========================
+% RECOMENDACIONES
+% =========================
+
+recomendar_gamer(s, _) :-
+    nl, write('>>> GAMER ULTRA'), nl,
+    write('- asus_rog_strix_scar_18_2026'), nl,
+    write('- msi_raider_ge78_hx'), nl,
+    guardar_compra(laptop),
+    aplicar_oferta.
+
+recomendar_gamer(n, s) :-
+    nl, write('>>> GAMER PORTATIL'), nl,
+    write('- msi_raider_ge78_hx'), nl,
+    guardar_compra(laptop).
+
+recomendar_gamer(n, n) :-
+    nl, write('>>> GAMER EQUILIBRADO'), nl,
+    write('- asus_rog_strix_scar_18_2026'), nl,
+    guardar_compra(laptop).
+
+recomendar_workstation(s) :-
+    nl, write('>>> WORKSTATION ALTO RENDIMIENTO'), nl,
+    write('- precision_7780_workstation'), nl,
+    write('- hp_zbook_fury_g10'), nl,
+    guardar_compra(laptop).
+
+recomendar_workstation(n) :-
+    nl, write('>>> WORKSTATION MODERADA'), nl,
+    write('- hp_zbook_fury_g10'), nl,
+    guardar_compra(laptop).
+
+recomendar_diseno(s) :-
+    nl, write('>>> DISEÑO (APPLE)'), nl,
+    write('- apple_macbook_pro_16_m4_max'), nl,
+    guardar_compra(laptop).
+
+recomendar_diseno(n) :-
+    nl, write('>>> DISEÑO GENERAL'), nl,
+    write('- lenovo_thinkpad_x1_carbon_gen_13'), nl,
+    guardar_compra(laptop).
+
+recomendar_oficina :-
+    nl, write('>>> OFICINA Y ESTUDIO'), nl,
+    write('- lenovo_thinkpad_x1_carbon_gen_13'), nl,
+    guardar_compra(laptop).
+
+% =========================
+% OFERTAS
+% =========================
+
+aplicar_oferta :-
+    oferta_descuento(D),
+    write('Descuento disponible: '), write(D), write('%'), nl.
+
+mostrar_ofertas :-
+    (oferta_descuento(D) ->
+        write('Oferta actual: '), write(D), write('% de descuento'), nl
+    ;
+        write('No hay ofertas disponibles'), nl).
+
+% =========================
+% HISTORIAL Y RECOMENDACIONES
+% =========================
+
+recomendar_por_historial :-
+    ultima_compra(Tipo),
+    nl,
+    write('>>> PRODUCTOS COMPLEMENTARIOS:'), nl,
+    forall(complementario(Tipo, Producto),
+        (write('- '), write(Producto), nl)), !.
+
+recomendar_por_historial :-
+    write('Aun no has realizado ninguna compra.'), nl.
+
+mostrar_historial :-
+    nl, write('=== HISTORIAL DE COMPRAS ==='), nl,
+    (historial_compra(_) ->
+        forall(historial_compra(X),
+            (write('- '), write(X), nl))
+    ;
+        write('No hay compras registradas.')
+    ), nl.
+
+% =========================
+% ARMAR PC Y UTILIDADES
+% =========================
+
+armar_pc :-
+    nl, write('--- CONFIGURADOR DE PC ---'), nl,
+    mostrar_lista('PROCESADORES', procesador),
+    seleccionar('procesador', procesador, CPU),
+    mostrar_lista('RAM', ram),
+    seleccionar('RAM', ram, RAM),
+    mostrar_lista('GPU', gpu),
+    seleccionar('GPU', gpu, GPU),
+    mostrar_lista('ALMACENAMIENTO', almacenamiento),
+    seleccionar('Disco', almacenamiento, DISCO),
+    nl,
+    write('===== CONFIGURACION FINAL ====='), nl,
+    write('CPU: '), write(CPU), nl,
+    write('RAM: '), write(RAM), nl,
+    write('GPU: '), write(GPU), nl,
+    write('Disco: '), write(DISCO), nl,
+    verificar_compatibilidad(CPU, GPU),
+    guardar_compra(pc).
+
+verificar_compatibilidad(CPU, GPU) :-
+    (compatibilidad(procesador(CPU), gpu(GPU)) ->
+        write('Componentes compatibles'), nl
+    ;
+        write('Posible incompatibilidad CPU-GPU'), nl).
+
+mostrar_lista(Titulo, Predicado) :-
+    nl, write('--- '), write(Titulo), write(' ---'), nl,
+    forall(call(Predicado, X), (write('- '), write(X), nl)).
+
+seleccionar(Nombre, Predicado, Valor) :-
+    repeat,
+    write('Elige '), write(Nombre), write(': '),
+    read(Valor),
+    (call(Predicado, Valor) -> true ;
+    write('No valido. Intenta de nuevo.'), nl, fail).
+
+leer_si_no(Resultado) :-
+    read(R),
+    ((R == s ; R == n) -> Resultado = R ;
+    write('Solo s/n: '), leer_si_no(Resultado)).
