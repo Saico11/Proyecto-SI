@@ -79,3 +79,38 @@ complementario(pc, monitor).
 complementario(pc, teclado).
 complementario(pc, mouse).
 complementario(pc, parlantes).
+
+% =========================
+% MENÚ PRINCIPAL
+% =========================
+
+inicio :-
+    nl, write('=== TIENDA DE INFORMATICA ==='), nl,
+    write('1. Armar PC manualmente'), nl,
+    write('2. Ver Laptops disponibles'), nl,
+    write('3. Comprar Laptop (Asistente inteligente)'), nl,
+    write('4. Ver productos complementarios'), nl,
+    write('5. Ver ofertas especiales'), nl,
+    write('6. Ver historial de compras'), nl,
+    write('0. Salir'), nl,
+    write('Seleccione una opcion: '),
+    read(Opcion),
+    ejecutar_opcion(Opcion).
+
+ejecutar_opcion(0) :- write('¡Gracias por su visita!'), !.
+ejecutar_opcion(1) :- armar_pc, inicio.
+ejecutar_opcion(2) :- mostrar_catalogo, inicio.
+ejecutar_opcion(3) :- cuestionario_laptop, inicio.
+ejecutar_opcion(4) :- recomendar_por_historial, inicio.
+ejecutar_opcion(5) :- mostrar_ofertas, inicio.
+ejecutar_opcion(6) :- mostrar_historial, inicio.
+ejecutar_opcion(_) :- write('Opcion no valida.'), nl, inicio.
+
+% =========================
+% CATÁLOGO
+% =========================
+
+mostrar_catalogo :-
+    nl, write('--- CATALOGO ---'), nl,
+    forall(laptop(Tipo, Modelo),
+    (write('- '), write(Modelo), write(' ['), write(Tipo), write(']'), nl)).
