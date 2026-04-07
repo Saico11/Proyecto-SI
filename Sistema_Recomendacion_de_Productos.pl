@@ -114,3 +114,53 @@ mostrar_catalogo :-
     nl, write('--- CATALOGO ---'), nl,
     forall(laptop(Tipo, Modelo),
     (write('- '), write(Modelo), write(' ['), write(Tipo), write(']'), nl)).
+
+% =========================
+% GUARDAR COMPRA
+% =========================
+
+guardar_compra(Tipo) :-
+    retractall(ultima_compra(_)),
+    assert(ultima_compra(Tipo)),
+    assert(historial_compra(Tipo)).
+
+% =========================
+% SISTEMA INTELIGENTE LAPTOPS
+% =========================
+
+cuestionario_laptop :-
+    nl, write('--- ASISTENTE INTELIGENTE ---'), nl,
+    write('Responde con s/n'), nl,
+    preguntar_gaming.
+
+preguntar_gaming :-
+    write('¿Vas a usar la laptop para videojuegos de alta gama? (s/n): '),
+    leer_si_no(R),
+    (R == s -> preguntar_gaming_detalle ; preguntar_profesional).
+
+preguntar_gaming_detalle :-
+    write('¿Quieres jugar en calidad ultra? (s/n): '),
+    leer_si_no(R1),
+    write('¿Te importa la portabilidad? (s/n): '),
+    leer_si_no(R2),
+    recomendar_gamer(R1, R2).
+
+preguntar_profesional :-
+    write('¿Eres profesional de ingenieria o 3D? (s/n): '),
+    leer_si_no(R),
+    (R == s -> preguntar_workstation ; preguntar_diseno).
+
+preguntar_workstation :-
+    write('¿Necesitas renderizado pesado? (s/n): '),
+    leer_si_no(R),
+    recomendar_workstation(R).
+
+preguntar_diseno :-
+    write('¿Trabajas en diseño o edicion? (s/n): '),
+    leer_si_no(R),
+    (R == s -> preguntar_diseno_detalle ; recomendar_oficina).
+
+preguntar_diseno_detalle :-
+    write('¿Prefieres macOS? (s/n): '),
+    leer_si_no(R),
+    recomendar_diseno(R).
